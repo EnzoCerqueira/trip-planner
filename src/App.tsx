@@ -23,6 +23,14 @@ function App() {
     setPassoAtual(1);
   };
 
+  const resultStep = () => {
+    if (cidadeDestino.trim() !== "") {
+      setPassoAtual(3);
+    } else {
+      alert("Por favor, insira a cidade de destino.");
+    }
+  };
+
   const handleAddLocation = () => {
     // Logic to add a location
   };
@@ -33,13 +41,13 @@ function App() {
 
   return (
     <>
-      <div className="bg-gray-900 min-h-screen">
-        <header className="flex items-center justify-center">
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <header className="block justify-center">
           <h1 className="text-red-500 font-bold text-4xl p-4">Trip Planner</h1>
         </header>
         <main className="flex justify-center items-center">
           {passoAtual === 1 && (
-            <div className="">
+            <div>
               <img src={Logo} alt="Trip Planner Logo" className="mb-5" />
               <div className="flex justify-center items-center">
                 <input
@@ -59,7 +67,7 @@ function App() {
             </div>
           )}
           {passoAtual === 2 && (
-            <div className="">
+            <div>
               <img src={Logo} alt="Trip Planner Logo" className="mb-5" />
               <div className="flex justify-center items-center">
                 <input
@@ -71,14 +79,31 @@ function App() {
                 />
                 <button
                   className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-3 border border-blue-700 rounded cursor-pointer"
-                  onClick={nextStep}
+                  onClick={resultStep}
                 >
                   Add Destination
                 </button>
-                <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 border border-blue-700 rounded cursor-pointer" onClick={backOneStap}>
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 border border-blue-700 rounded cursor-pointer"
+                  onClick={backOneStap}
+                >
                   <TbArrowBackUp />
                 </button>
               </div>
+            </div>
+          )}
+          {passoAtual === 3 && (
+            <div>
+              <img src={Logo} alt="Trip Planner Logo" className="mb-5" />
+              <div className="flex justify-center items-center">
+                <div className="flex justify-around gap-40 ">
+                  <h2 className="text-3xl text-white">Clima da cidade</h2>
+                  <h2 className="text-3xl text-white">Distancia entre as cidades</h2>
+                </div>
+              </div>
+                <div className="flex justify-center items-center mt-7">
+                  <h2 className="text-2xl text-white"> Curiosidades sobre a cidade destino</h2>
+                </div>
             </div>
           )}
         </main>
