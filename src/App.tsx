@@ -1,13 +1,14 @@
 import { useState } from "react";
 import "./App.css";
 import Logo from "./assets/images/trip-planner-logo.png";
+import { TbArrowBackUp } from "react-icons/tb";
 
 function App() {
   const [passoAtual, setPassoAtual] = useState(1);
 
   const [cidadeOrigem, setCidadeOrigem] = useState("");
   const [cidadeDestino, setCidadeDestino] = useState("");
-  
+
   // const [isLoading, setIsLoading] = useState(false);
 
   const nextStep = () => {
@@ -69,10 +70,13 @@ function App() {
                   onChange={(e) => setCidadeDestino(e.target.value)}
                 />
                 <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 border border-blue-700 rounded cursor-pointer"
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-3 border border-blue-700 rounded cursor-pointer"
                   onClick={nextStep}
                 >
                   Add Destination
+                </button>
+                <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 border border-blue-700 rounded cursor-pointer" onClick={backOneStap}>
+                  <TbArrowBackUp />
                 </button>
               </div>
             </div>
