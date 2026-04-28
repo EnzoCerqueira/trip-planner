@@ -9,6 +9,8 @@ function App() {
   const [cidadeOrigem, setCidadeOrigem] = useState("");
   const [cidadeDestino, setCidadeDestino] = useState("");
   const [climaDestino, setClimaDestino] = useState<any>(null);
+  const [curiosidade, setCuriosidade] = useState("");
+  const [imagemCidade, setImagemCidade] = useState(null);
 
   const [distanciaFinal, setDistanciaFinal] = useState(0);
 
@@ -54,11 +56,11 @@ function App() {
     }
   }
 
-  async function catchWeather(lat: number, lon: number){
+  async function catchWeather(lat: number, lon: number) {
     const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=pt_br`;
 
-    try{
+    try {
       const response = await fetch(url);
       const data = await response.json();
 
@@ -66,10 +68,36 @@ function App() {
         temperatura: Math.round(data.main.temp),
         descricao: data.weather[0].description,
         icone: data.weather[0].icon,
-      })
+      });
       console.log("⛅ Clima capturado:", data.weather[0].description);
-    }catch(error){
+    } catch (error) {
       console.error("Error ao buscar clima:", error);
+    }
+  }
+
+  async function catchCuriosity(cityName: string){
+    const url =  `https://pt.wikipedia.org/api/rest_v1/page/summary/${cityName}`
+
+    try{
+      const response = await fetch(url);
+      const data = await response.json();
+
+      setCuriosidade(data.extract);
+    }catch(error){
+      console.error("Error ao buscar curiosidade:", error);
+    }
+  }
+
+  async function catchImageCity(cityName: string){
+    const url = `https://pt.wikipedia.org/api/rest_v1/page/summary/${cityName}`
+
+    try{
+      const response = await fetch(url);
+      const data = await response.json();
+      setImagemCidade(data.thumbnail.source);
+    }catch(error){
+      console.error("Error ao buscar imagem:", error);
+      
     }
   }
 
@@ -111,7 +139,11 @@ function App() {
         destinationCoords.longitude,
       );
       setDistanciaFinal(kilometers);
-      await catchWeather(destinationCoords.latitude, destinationCoords.longitude);
+      await catchWeather(
+        destinationCoords.latitude,
+        destinationCoords.longitude,
+      );
+      await catchCuriosity(cidadeDestino);
       setPassoAtual(3);
     } else {
       console.log(
@@ -175,23 +207,22 @@ function App() {
           )}
           {passoAtual === 3 && (
             <div>
-              <img src={Logo} alt="Trip Planner Logo" className="mb-5" />
+              <img src={imagemCidade} alt="Imagem da cidade" className="mb-5" />
               <div className="flex justify-center items-center">
                 <div className="flex justify-around gap-40 ">
                   <div>
-                  <h2 className="text-3xl text-white">{climaDestino?.temperatura}°C</h2>
-                  <h6 className="text-white">{climaDestino?.descricao}</h6>
+                    <h2 className="text-3xl text-white">
+                      {climaDestino?.temperatura}°C
+                    </h2>
+                    <h6 className="text-white">{climaDestino?.descricao}</h6>
                   </div>
                   <h2 className="text-3xl text-white">
                     {distanciaFinal} km de distância ✈️
-                  </h2> 
+                  </h2>
                 </div>
               </div>
               <div className="flex justify-center items-center mt-7">
-                <h2 className="text-2xl text-white">
-                  Descriçao da cidade
-                  
-                </h2>
+                <p className="text-white">{curiosidade}</p>
               </div>
             </div>
           )}
