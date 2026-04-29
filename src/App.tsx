@@ -10,7 +10,9 @@ function App() {
   const [cidadeDestino, setCidadeDestino] = useState("");
   const [climaDestino, setClimaDestino] = useState<any>(null);
   const [curiosidade, setCuriosidade] = useState("");
-  const [imagemCidade, setImagemCidade] = useState(null);
+  const [imagemCidade, setImagemCidade] = useState<string | undefined>(
+    undefined,
+  );
 
   const [distanciaFinal, setDistanciaFinal] = useState(0);
 
@@ -75,29 +77,22 @@ function App() {
     }
   }
 
-  async function catchCuriosity(cityName: string){
-    const url =  `https://pt.wikipedia.org/api/rest_v1/page/summary/${cityName}`
+  async function catchCuriosity(cityName: string) {
+    const url = `https://pt.wikipedia.org/api/rest_v1/page/summary/${cityName}`;
 
-    try{
+    try {
       const response = await fetch(url);
       const data = await response.json();
 
       setCuriosidade(data.extract);
-    }catch(error){
+      if (data.thumbnail && data.thumbnail.source) {
+        setImagemCidade(data.thumbnail.source);
+      } else {
+        setImagemCidade(undefined);
+      }
+
+    } catch (error) {
       console.error("Error ao buscar curiosidade:", error);
-    }
-  }
-
-  async function catchImageCity(cityName: string){
-    const url = `https://pt.wikipedia.org/api/rest_v1/page/summary/${cityName}`
-
-    try{
-      const response = await fetch(url);
-      const data = await response.json();
-      setImagemCidade(data.thumbnail.source);
-    }catch(error){
-      console.error("Error ao buscar imagem:", error);
-      
     }
   }
 
@@ -156,7 +151,7 @@ function App() {
     <>
       <div className="bg-gray-900 min-h-screen">
         <header className="flex items-center justify-center">
-          <h1 className="text-red-500 font-bold text-4xl p-4">Trip Planner</h1>
+          <h1 className="text-blue-200 font-bold text-4xl p-4">Trip Planner</h1>
         </header>
         <main className="flex justify-center items-center">
           {passoAtual === 1 && (
@@ -206,24 +201,44 @@ function App() {
             </div>
           )}
           {passoAtual === 3 && (
-            <div>
-              <img src={imagemCidade} alt="Imagem da cidade" className="mb-5" />
-              <div className="flex justify-center items-center">
-                <div className="flex justify-around gap-40 ">
-                  <div>
-                    <h2 className="text-3xl text-white">
-                      {climaDestino?.temperatura}°C
-                    </h2>
-                    <h6 className="text-white">{climaDestino?.descricao}</h6>
-                  </div>
-                  <h2 className="text-3xl text-white">
-                    {distanciaFinal} km de distância ✈️
+            <div className="flex flex-col items-center max-w-2xl px-4">
+              {imagemCidade && (
+                <img
+                  src={imagemCidade}
+                  alt="Imagem da cidade"
+                className="mb-6 rounded-lg shadow-lg max-h-80 object-cover"
+              />
+          )}
+              <div className="flex flex-row justify-center items-center gap-12 mb-8 w-full border-b border-gray-700 pb-6">
+                <div className="flex flex-col items-center">
+                  <h2 className="text-4xl font-bold text-white">
+                    {climaDestino?.temperatura}°C
                   </h2>
+                  <p className="text-blue-400 text-sm capitalize">
+                    {climaDestino?.descricao}
+                  </p>
+                </div>
+
+                <div className="h-10 w-[1px] bg-gray-600"></div>
+
+                <div className="flex flex-col items-center">
+                  <h2 className="text-3xl font-bold text-white">
+                    {distanciaFinal} <span className="text-xl">km</span>
+                  </h2>
+                  <p className="text-gray-400 text-sm">distância ✈️</p>
                 </div>
               </div>
-              <div className="flex justify-center items-center mt-7">
-                <p className="text-white">{curiosidade}</p>
+              <div className="text-center">
+                <p className="text-gray-200 leading-relaxed italic">
+                  {curiosidade}
+                </p>
               </div>
+              <button
+                onClick={backOneStep}
+                className="mt-8 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm transition-all cursor-pointer flex items-center gap-2"
+              >
+                <TbArrowBackUp /> Nova pesquisa
+              </button>
             </div>
           )}
         </main>
@@ -233,3 +248,4 @@ function App() {
 }
 
 export default App;
+
