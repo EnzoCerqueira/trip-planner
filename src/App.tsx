@@ -16,7 +16,7 @@ function App() {
 
   const [distanciaFinal, setDistanciaFinal] = useState(0);
 
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const nextStep = () => {
     if (cidadeOrigem.trim() !== "") {
@@ -90,7 +90,6 @@ function App() {
       } else {
         setImagemCidade(undefined);
       }
-
     } catch (error) {
       console.error("Error ao buscar curiosidade:", error);
     }
@@ -122,28 +121,35 @@ function App() {
   }
 
   async function travelCalculator() {
-    const originCoords = await catchCoordinates(cidadeOrigem);
-    const destinationCoords = await catchCoordinates(cidadeDestino);
+    setIsLoading(true);
+    try {
+      const originCoords = await catchCoordinates(cidadeOrigem);
+      const destinationCoords = await catchCoordinates(cidadeDestino);
 
-    if (originCoords !== null && destinationCoords !== null) {
-      console.log("✅ Sucesso! Temos as coordenadas das duas cidades!");
-      const kilometers = calcularDistancia(
-        originCoords.latitude,
-        originCoords.longitude,
-        destinationCoords.latitude,
-        destinationCoords.longitude,
-      );
-      setDistanciaFinal(kilometers);
-      await catchWeather(
-        destinationCoords.latitude,
-        destinationCoords.longitude,
-      );
-      await catchCuriosity(cidadeDestino);
-      setPassoAtual(3);
-    } else {
-      console.log(
-        "❌ Falha ao obter as coordenadas de uma ou ambas as cidades.",
-      );
+      if (originCoords !== null && destinationCoords !== null) {
+        console.log("✅ Sucesso! Temos as coordenadas das duas cidades!");
+        const kilometers = calcularDistancia(
+          originCoords.latitude,
+          originCoords.longitude,
+          destinationCoords.latitude,
+          destinationCoords.longitude,
+        );
+        setDistanciaFinal(kilometers);
+        await catchWeather(
+          destinationCoords.latitude,
+          destinationCoords.longitude,
+        );
+        await catchCuriosity(cidadeDestino);
+        setPassoAtual(3);
+      } else {
+        console.log(
+          "❌ Falha ao obter as coordenadas de uma ou ambas as cidades.",
+        );
+      }
+    } catch (error) {
+      console.error("Ocorreu um erro durante o cálculo da viagem:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -151,7 +157,9 @@ function App() {
     <>
       <div className="bg-gray-900 min-h-screen">
         <header className="flex items-center justify-center">
-          <h1 className="text-blue-200 font-bold text-4xl p-4">Trip Planner</h1>
+          <h1 className="text-blue-200 font-bold text-3xl md:text-4xl p-4 text-center">
+            Trip Planner
+          </h1>
         </header>
         <main className="flex justify-center items-center">
           {passoAtual === 1 && (
@@ -184,12 +192,19 @@ function App() {
                   className="bg-gray-800 text-gray-300 placeholder:text-gray-500 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-5 py-2 px-4 rounded w-64"
                   value={cidadeDestino}
                   onChange={(e) => setCidadeDestino(e.target.value)}
+                  disabled={isLoading}
                 />
+
                 <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-3 border border-blue-700 rounded cursor-pointer"
+                  className={`font-bold py-2 px-4 mr-3 border rounded text-white transition-colors ${
+                    isLoading
+                      ? "bg-gray-500 border-gray-600 cursor-not-allowed"
+                      : "bg-blue-500 hover:bg-blue-600 border-blue-700 cursor-pointer"
+                  }`}
                   onClick={travelCalculator}
+                  disabled={isLoading} // Impede múltiplos cliques
                 >
-                  Calculate Route
+                  {isLoading ? "Calculando... ⏳" : "Calculate Route"}
                 </button>
                 <button
                   className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 border border-blue-700 rounded cursor-pointer"
@@ -206,9 +221,9 @@ function App() {
                 <img
                   src={imagemCidade}
                   alt="Imagem da cidade"
-                className="mb-6 rounded-lg shadow-lg max-h-80 object-cover"
-              />
-          )}
+                  className="mb-6 rounded-lg shadow-lg max-h-80 object-cover"
+                />
+              )}
               <div className="flex flex-row justify-center items-center gap-12 mb-8 w-full border-b border-gray-700 pb-6">
                 <div className="flex flex-col items-center">
                   <h2 className="text-4xl font-bold text-white">
@@ -248,4 +263,3 @@ function App() {
 }
 
 export default App;
-
