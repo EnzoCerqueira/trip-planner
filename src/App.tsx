@@ -155,26 +155,29 @@ function App() {
 
   return (
     <>
-      <div className="bg-gray-900 min-h-screen">
+      <div className="bg-gray-900 min-h-screen flex flex-col">
         <header className="flex items-center justify-center">
-          <h1 className="text-blue-200 font-bold text-3xl md:text-4xl p-4 text-center">
+          <h1 className="text-blue-200 font-bold text-4xl p-4 md:p-8">
             Trip Planner
           </h1>
         </header>
-        <main className="flex justify-center items-center">
+
+        <main className="flex-1 flex justify-center items-center p-6">
           {passoAtual === 1 && (
-            <div>
-              <img src={Logo} alt="Trip Planner Logo" className="mb-5" />
-              <div className="flex justify-center items-center">
+            <div className="flex flex-col items-center">
+              {/* Logo mantém o tamanho original, mas diminui um pouco no mobile se necessário */}
+              <img src={Logo} alt="Trip Planner Logo" className="mb-10 w-full max-w-[500px]" />
+              
+              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
                 <input
                   type="text"
                   placeholder="Enter your current city..."
-                  className="bg-gray-800 text-gray-300 placeholder:text-gray-500 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-5 py-2 px-4 rounded w-64"
+                  className="bg-gray-800 text-gray-300 placeholder:text-gray-500 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-4 rounded w-full md:w-80 h-12"
                   value={cidadeOrigem}
                   onChange={(e) => setCidadeOrigem(e.target.value)}
                 />
                 <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 border border-blue-700 rounded cursor-pointer"
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 border border-blue-700 rounded cursor-pointer w-full md:w-auto h-12 whitespace-nowrap transition-colors"
                   onClick={nextStep}
                 >
                   Add Location
@@ -182,75 +185,81 @@ function App() {
               </div>
             </div>
           )}
+
           {passoAtual === 2 && (
-            <div>
-              <img src={Logo} alt="Trip Planner Logo" className="mb-5" />
-              <div className="flex justify-center items-center">
+            <div className="flex flex-col items-center">
+              <img src={Logo} alt="Trip Planner Logo" className="mb-10 w-full max-w-[500px]" />
+              
+              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
                 <input
                   type="text"
                   placeholder="Enter a destination city..."
-                  className="bg-gray-800 text-gray-300 placeholder:text-gray-500 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-5 py-2 px-4 rounded w-64"
+                  className="bg-gray-800 text-gray-300 placeholder:text-gray-500 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-4 rounded w-full md:w-80 h-12"
                   value={cidadeDestino}
                   onChange={(e) => setCidadeDestino(e.target.value)}
                   disabled={isLoading}
                 />
-
-                <button
-                  className={`font-bold py-2 px-4 mr-3 border rounded text-white transition-colors ${
-                    isLoading
-                      ? "bg-gray-500 border-gray-600 cursor-not-allowed"
-                      : "bg-blue-500 hover:bg-blue-600 border-blue-700 cursor-pointer"
-                  }`}
-                  onClick={travelCalculator}
-                  disabled={isLoading} // Impede múltiplos cliques
-                >
-                  {isLoading ? "Calculando... ⏳" : "Calculate Route"}
-                </button>
-                <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 border border-blue-700 rounded cursor-pointer"
-                  onClick={backOneStep}
-                >
-                  <TbArrowBackUp />
-                </button>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <button
+                    className={`flex-1 md:flex-none font-bold py-2 px-6 border rounded text-white h-12 transition-colors ${
+                      isLoading
+                        ? "bg-gray-500 border-gray-600 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-600 border-blue-700 cursor-pointer"
+                    }`}
+                    onClick={travelCalculator}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "⏳" : "Calculate Route"}
+                  </button>
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 border border-blue-700 rounded cursor-pointer h-12"
+                    onClick={backOneStep}
+                  >
+                    <TbArrowBackUp />
+                  </button>
+                </div>
               </div>
             </div>
           )}
+
           {passoAtual === 3 && (
-            <div className="flex flex-col items-center max-w-2xl px-4">
+            <div className="flex flex-col items-center w-full max-w-4xl px-4">
               {imagemCidade && (
                 <img
                   src={imagemCidade}
                   alt="Imagem da cidade"
-                  className="mb-6 rounded-lg shadow-lg max-h-80 object-cover"
+                  className="mb-8 rounded-xl shadow-2xl object-cover"
                 />
               )}
-              <div className="flex flex-row justify-center items-center gap-12 mb-8 w-full border-b border-gray-700 pb-6">
-                <div className="flex flex-col items-center">
-                  <h2 className="text-4xl font-bold text-white">
+              
+              {/* Container de Clima e KM com gap original (40) no desktop */}
+              <div className="flex flex-col md:flex-row justify-around items-center gap-10 md:gap-40 mb-10 w-full border-b border-gray-700 pb-10">
+                <div className="text-center">
+                  <h2 className="text-5xl font-bold text-white mb-2">
                     {climaDestino?.temperatura}°C
                   </h2>
-                  <p className="text-blue-400 text-sm capitalize">
+                  <p className="text-blue-400 text-lg capitalize">
                     {climaDestino?.descricao}
                   </p>
                 </div>
 
-                <div className="h-10 w-[1px] bg-gray-600"></div>
-
-                <div className="flex flex-col items-center">
-                  <h2 className="text-3xl font-bold text-white">
-                    {distanciaFinal} <span className="text-xl">km</span>
+                <div className="text-center">
+                  <h2 className="text-4xl font-bold text-white mb-2">
+                    {distanciaFinal} <span className="text-2xl font-normal">km</span>
                   </h2>
-                  <p className="text-gray-400 text-sm">distância ✈️</p>
+                  <p className="text-gray-400 text-lg">distância ✈️</p>
                 </div>
               </div>
-              <div className="text-center">
-                <p className="text-gray-200 leading-relaxed italic">
+
+              <div className="max-w-2xl text-center">
+                <p className="text-gray-300 text-lg md:text-xl leading-relaxed italic">
                   {curiosidade}
                 </p>
               </div>
+
               <button
                 onClick={backOneStep}
-                className="mt-8 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm transition-all cursor-pointer flex items-center gap-2"
+                className="mt-12 bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-full text-lg transition-all cursor-pointer flex items-center gap-3 border border-gray-600"
               >
                 <TbArrowBackUp /> Nova pesquisa
               </button>
